@@ -10,25 +10,25 @@ Features
 File Structure
 The project's directory structure is as follows:
 fleet-tracker/
-├── app/                    # Main application module
-│   ├── src/                # Source files
-│   │   ├── main/           # Main source folder
-│   │   │   ├── java/       # Java/Kotlin code files
-│   │   │   │   └── com/    # Package for application
+├── app/                          # Main application module
+│   ├── src/                      # Source files
+│   │   ├── main/                 # Main source folder
+│   │   │   ├── java/             # Java/Kotlin code files
+│   │   │   │   └── com/          # Package for application
 │   │   │   │       └── fleettracker/
-│   │   │   │           └── components/    # UI components
-│   │   │   │           └── dataclasses/ # Data models
-│   │   │   │           └── routes/ # Navigation routes
-│   │   │   │           └── screens/ # App composable screens
-│   │   │   │           └── ui/theme/ # App themes
-│   │   │   │           └── utilities/  # Utility functions
-│   │   │   │           └── viewmodels/ # Viewmodels
-│   │   │   │           └── MainActivity.kt # Main Activity
-│   │   │   ├── res/        # Resources (layouts, strings, images)
+│   │   │   │           ├── components/  # UI components
+│   │   │   │           ├── dataclasses/ # Data models
+│   │   │   │           ├── routes/      # Navigation routes
+│   │   │   │           ├── screens/     # App composable screens
+│   │   │   │           ├── ui/theme/    # App themes
+│   │   │   │           ├── utilities/   # Utility functions
+│   │   │   │           └── viewmodels/  # Viewmodels
+│   │   │   │   └── MainActivity.kt     # Main Activity
+│   │   │   ├── res/                # Resources (layouts, strings, images)
 │   │   │   ├── AndroidManifest.xml  # App configuration
-├── build.gradle            # Project-level build file
-├── settings.gradle         # Project-level settings
-├── README.md               # Project documentation (this file)
+├── build.gradle                   # Project-level build file
+├── settings.gradle                # Project-level settings
+├── README.md                      # Project documentation (this file)
 
 Installation
 Clone this repository:
