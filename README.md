@@ -2,7 +2,7 @@ Fleet Tracker App 🚛📊
 The Fleet Tracker App allows users to manage fleet details, generate PDF reports, and manage them all within the app. Ideal for logistics managers, fleet owners, or anyone needing an efficient way to track and document fleet operations.
 
 Features
- - Add Fleet Details – Input and store information about fleets.
+ - Add Fleet Details – Input and store information about fleets. 
  - Generate PDF Reports – Create structured PDF reports from the fleet data.
  - View & Share PDFs – Easily access and share generated reports.
  - Delete PDFs – Manage and remove unnecessary reports directly within the app.
