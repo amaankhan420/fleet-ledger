@@ -75,5 +75,5 @@
     <string name="failed_to_save_commission">Failed to add commission.</string>
     <string name="commission_updated">Commission updated for</string>
     <string name="ensure_commission_values">Make sure commission values are added.</string>
-    <string name="unexpected_error">An Unexpected Error Occured</string>
+    <string name="unexpected_error">An Unexpected Error Occurred</string>
 </resources>
