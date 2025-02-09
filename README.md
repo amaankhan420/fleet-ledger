@@ -17,12 +17,13 @@ fleet-tracker/
 │   │   │   │   └── com/          # Package for application
 │   │   │   │       └── fleettracker/
 │   │   │   │           ├── components/  # UI components
-│   │   │   │           ├── dataclasses/ # Data models
+│   │   │   │           ├── dataclasses/ # Data model
+│   │   │   │           ├── datastore/   # Datastore
 │   │   │   │           ├── routes/      # Navigation routes
 │   │   │   │           ├── screens/     # App composable screens
 │   │   │   │           ├── ui/theme/    # App themes
 │   │   │   │           ├── utilities/   # Utility functions
-│   │   │   │           └── viewmodels/  # Viewmodels
+│   │   │   │           └── viewmodels/  # ViewModels and ViewModelFactory
 │   │   │   │   └── MainActivity.kt     # Main Activity
 │   │   │   ├── res/                # Resources (layouts, strings, images)
 │   │   │   ├── AndroidManifest.xml  # App configuration
