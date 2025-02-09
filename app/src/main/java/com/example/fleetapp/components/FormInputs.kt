@@ -23,9 +23,6 @@ fun FormInputs(
     onAmountChange: (String) -> Unit,
     incentive: String,
     onIncentiveChanges: (String) -> Unit,
-    commission: String,
-    onCommissionChange: (String) -> Unit,
-    canEdit: Boolean = true
 ) {
     Column(
         modifier = Modifier
@@ -41,6 +38,5 @@ fun FormInputs(
         InputTextField(context.getString(R.string.driver_name), driverName, onDriverNameChange)
         InputTextField(context.getString(R.string.amount), amount, onAmountChange, true)
         InputTextField(context.getString(R.string.incentive), incentive, onIncentiveChanges, true)
-        InputTextField(context.getString(R.string.commission), commission, onCommissionChange, true, canEdit)
     }
 }

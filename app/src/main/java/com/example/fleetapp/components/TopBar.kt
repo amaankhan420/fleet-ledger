@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,7 +36,9 @@ fun TopBar(
     showBackButton: Boolean = true,
     onBackStack: () -> Unit = {},
     showPDF: Boolean = false,
-    onPDFClick: () -> Unit = {}
+    enterCommission: Boolean = false,
+    onPDFClick: () -> Unit = {},
+    onCommissionClick: () -> Unit = {}
 ) {
     val isBackPressed = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -57,6 +60,7 @@ fun TopBar(
         navigationIcon = {
             if (showBackButton) {
                 IconButton(
+                    modifier = Modifier.padding(start = 8.dp),
                     onClick = {
                         if (!isBackPressed.value) {
                             isBackPressed.value = true
@@ -75,12 +79,25 @@ fun TopBar(
         actions = {
             if (showPDF) {
                 IconButton(
+                    modifier = Modifier.padding(end = 8.dp),
                     onClick = {
                         onPDFClick()
                     }) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.AutoMirrored.Filled.InsertDriveFile,
                         contentDescription = context.getString(R.string.pdf_screen_button),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            } else if (enterCommission) {
+                IconButton(
+                    modifier = Modifier.padding(end = 8.dp),
+                    onClick = {
+                        onCommissionClick()
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.AttachMoney,
+                        contentDescription = context.getString(R.string.commission),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }

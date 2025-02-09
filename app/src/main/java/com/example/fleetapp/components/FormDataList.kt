@@ -77,7 +77,6 @@ private fun FormDataItem(
     var editingDriverName by rememberSaveable { mutableStateOf(formData.driverName) }
     var editingAmount by rememberSaveable { mutableStateOf(formData.amount.toString()) }
     var editingIncentive by rememberSaveable { mutableStateOf(formData.incentive.toString()) }
-    var editingCommission by rememberSaveable { mutableStateOf(formData.commission.toString()) }
     val errorMessage by formViewModel.editingError.collectAsState()
 
     var showEditDialog by remember { mutableStateOf(false) }
@@ -125,13 +124,6 @@ private fun FormDataItem(
             if (formData.incentive > 0f) {
                 Text(
                     text = "${context.getString(R.string.incentive)}: ₹${formData.incentive}",
-                    modifier = Modifier.padding(top = 5.dp, start = 8.dp),
-                    style = TextStyle(fontSize = 16.sp)
-                )
-            }
-            if (formData.commission > 0f) {
-                Text(
-                    text = "${context.getString(R.string.commission)}: ₹${formData.commission}",
                     modifier = Modifier.padding(top = 5.dp, start = 8.dp),
                     style = TextStyle(fontSize = 16.sp)
                 )
@@ -220,13 +212,7 @@ private fun FormDataItem(
                         onIncentiveChanges = {
                             editingIncentive = it
                             formViewModel.editingError.value = ""
-                        },
-                        commission = editingCommission,
-                        onCommissionChange = {
-                            editingCommission = it
-                            formViewModel.editingError.value = ""
-                        },
-                        canEdit = formData.commission != 0f
+                        }
                     )
                 }
             },
@@ -246,16 +232,11 @@ private fun FormDataItem(
                             if (editingIncentive.isBlank()) {
                                 editingIncentive = "0.0"
                             }
-                            if (editingCommission.isBlank()) {
-                                editingCommission = "0.0"
-                            }
-
                             val newFormData = FormData(
                                 vehicleNumber = editingVehicleNumber,
                                 driverName = editingDriverName,
                                 amount = editingAmount.toFloat(),
                                 incentive = editingIncentive.toFloat(),
-                                commission = editingCommission.toFloat()
                             )
 
                             if (newFormData == formData) {

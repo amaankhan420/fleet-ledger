@@ -13,44 +13,36 @@
     <string name="incentive">Incentive</string>
     <string name="commission">Commission</string>
     <string name="total_entries">Total Entries</string>
+    <string name="remarks">Remarks</string>
 
     <string name="date_format">dd/MM/yyyy</string>
 
     <string name="add_data">Add Data</string>
     <string name="view_list">View List</string>
     <string name="generate_pdf">Generate PDF</string>
-    <string name="back">Back</string>
     <string name="download">Download</string>
     <string name="data_list">Data List</string>
     <string name="clear_fields">Clear Fields</string>
     <string name="cancel">Cancel</string>
-    <string name="delete_all">Delete All</string>
+    <string name="all">All</string>
     <string name="share">Share</string>
     <string name="delete">Delete</string>
     <string name="confirm_deletion">Confirm Deletion</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
+    <string name="add">Add</string>
     <string name="back_arrow">Back Arrow</string>
     <string name="pdf_screen_button">PDF Screen Button</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="are_you_sure">Are you sure you want to delete all data? This action cannot be undone.</string>
 
-    <string-array name="form_labels">
-        <item>Vehicle No.</item>
-        <item>Driver Name</item>
-        <item>Amount</item>
-    </string-array>
-
     <string name="fill_all_field">Please fill in all the required fields before adding data.</string>
     <string name="error_message">An error occurred while adding data.</string>
-    <string name="unexpected_error">Unexpected error occurred.</string>
     <string name="no_data_found">No data found for partner.</string>
     <string name="failed_to_remove_input">Failed to remove data.</string>
     <string name="failed_to_remove_data">Failed to remove all data.</string>
-    <string name="commission_already_added">Commission already added for this partner.</string>
     <string name="incentive_already_added">Incentive for this vehicle is already added in another entry.</string>
-    <string name="commission_is_mandatory_for_first_entry">Commission is mandatory for a partner.</string>
     <string name="please_enter_valid_numbers">Please enter valid numbers.</string>
     <string name="entry_not_found">Entry not found in list.</string>
     <string name="failed_to_edit_data">Failed to edit data.</string>
@@ -60,7 +52,6 @@
     <string name="enter_company_name">Please enter a company name.</string>
     <string name="company_name">Company Name.</string>
 
-    <string name="permission_error">Error checking permissions.</string>
     <string name="fab_error">Error handling FAB click</string>
 
     <string name="authority">com.example.fleetapp.fileprovider</string>
@@ -72,7 +63,6 @@
     <string name="failed_to_open_pdf">Failed to open PDF.</string>
     <string name="failed_to_delete_pdf">Failed to delete PDF.</string>
     <string name="failed_to_share_pdf">Failed to share PDF.</string>
-    <string name="failed_to_load_pdfs">Failed to load PDFs.</string>
 
     <string name="fleet_report">Fleet Report</string>
     <string name="fleet_report_summary">Fleet Report Summary</string>
@@ -82,4 +72,8 @@
     <string name="total_commission">Total Commission</string>
     <string name="payable">Payable</string>
     <string name="total_payable_amount">Total Payable Amount</string>
+    <string name="failed_to_save_commission">Failed to add commission.</string>
+    <string name="commission_updated">Commission updated for</string>
+    <string name="ensure_commission_values">Make sure commission values are added.</string>
+    <string name="unexpected_error">An Unexpected Error Occured</string>
 </resources>

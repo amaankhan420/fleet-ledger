@@ -12,4 +12,7 @@ sealed class Routes {
 
     @Serializable
     data object PDF : Routes()
+
+    @Serializable
+    data object Commission : Routes()
 }

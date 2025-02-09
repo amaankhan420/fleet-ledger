@@ -7,6 +7,5 @@ data class FormData(
     val vehicleNumber: String,
     val driverName: String,
     val amount: Float,
-    val incentive: Float = 0f,
-    var commission: Float = 0f
+    val incentive: Float = 0f
 )

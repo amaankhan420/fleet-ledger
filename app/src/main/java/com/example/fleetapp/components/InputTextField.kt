@@ -18,7 +18,6 @@ fun InputTextField(
     fieldName: String,
     onChange: (String) -> Unit,
     isNumber: Boolean = false,
-    canEdit: Boolean = true
 ) {
     val keyboardOptions = if (isNumber) {
         KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -47,7 +46,6 @@ fun InputTextField(
             disabledPlaceholderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
             cursorColor = MaterialTheme.colorScheme.secondary
         ),
-        enabled = canEdit,
         textStyle = TextStyle(fontSize = 16.sp),
         singleLine = true
     )

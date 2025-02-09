@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fleetapp.routes.Routes
+import com.example.fleetapp.routes.Routes.Commission
 import com.example.fleetapp.routes.Routes.Form
 import com.example.fleetapp.routes.Routes.ListOfEntry
 import com.example.fleetapp.routes.Routes.PDF
@@ -19,7 +20,7 @@ import com.example.fleetapp.viewmodels.PDFViewModel
 
 
 @Composable
-fun Navigations() {
+fun Navigations(formViewModel: FormViewModel) {
     val context = LocalContext.current
 
     Surface(
@@ -27,8 +28,6 @@ fun Navigations() {
         color = MaterialTheme.colorScheme.background
     ) {
         val navController = rememberNavController()
-
-        val formViewModel: FormViewModel = viewModel()
 
         val pdfViewModel: PDFViewModel = viewModel()
 
@@ -45,18 +44,36 @@ fun Navigations() {
             startDestination = Form
         ) {
             composable<Form> {
-                FormScreen(onNavigate = onNavigate, formViewModel = formViewModel, context = context)
+                FormScreen(
+                    onNavigate = onNavigate,
+                    formViewModel = formViewModel,
+                    context = context
+                )
             }
 
             composable<ListOfEntry> {
-                ListScreen(formViewModel = formViewModel, onBackStack = onBackStack, context = context)
+                ListScreen(
+                    formViewModel = formViewModel,
+                    onNavigate = onNavigate,
+                    onBackStack = onBackStack,
+                    context = context
+                )
             }
 
             composable<PDF> {
                 PDFScreen(
                     onBackStack = onBackStack,
                     pdfViewModel,
-                    context = context)
+                    context = context
+                )
+            }
+
+            composable<Commission> {
+                CommissionAdderScreen(
+                    formViewModel = formViewModel,
+                    onBackStack = onBackStack,
+                    context = context
+                )
             }
         }
     }

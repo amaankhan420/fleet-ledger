@@ -3,6 +3,7 @@ package com.example.fleetapp.screens
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +22,11 @@ import java.io.File
 
 
 @Composable
-fun PDFScreen(onBackStack: () -> Unit, pdfViewModel: PDFViewModel, context: Context) {
+fun PDFScreen(
+    onBackStack: () -> Unit,
+    pdfViewModel: PDFViewModel,
+    context: Context
+) {
 
     LaunchedEffect(Unit) {
         pdfViewModel.loadPdfs(context)
@@ -36,7 +41,11 @@ fun PDFScreen(onBackStack: () -> Unit, pdfViewModel: PDFViewModel, context: Cont
                 showBackButton = true,
                 onBackStack = onBackStack
             )
-        }
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .imePadding(),
     ) { paddingValues ->
         if (pdfList.isEmpty()) {
             Box(
@@ -96,10 +105,19 @@ fun PDFListItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            val details = pdfFile.name.split("--")
             Text(
-                text = pdfFile.name,
+                text = details[0],
                 style = MaterialTheme.typography.bodyLarge
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "From ${details[1].replace("-", "/")} to ${details[2].replace("-", "/")}",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
             Spacer(modifier = Modifier.height(5.dp))
 
             Row(
