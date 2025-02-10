@@ -17,7 +17,7 @@ fleet-tracker/
 │   │   │   │   └── com/          # Package for application
 │   │   │   │       └── fleettracker/
 │   │   │   │           ├── components/  # UI components
-│   │   │   │           ├── dataclasses/ # Data model
+│   │   │   │           ├── dataclasses/ # Data models
 │   │   │   │           ├── datastore/   # Datastore
 │   │   │   │           ├── routes/      # Navigation routes
 │   │   │   │           ├── screens/     # App composable screens
