@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fleetapp.R
 import com.example.fleetapp.dataclasses.FormData
 import com.example.fleetapp.viewmodels.FormViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -80,6 +82,7 @@ private fun FormDataItem(
     val errorMessage by formViewModel.editingError.collectAsState()
 
     var showEditDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
@@ -217,6 +220,7 @@ private fun FormDataItem(
                 }
             },
             confirmButton = {
+
                 Button(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
@@ -232,21 +236,23 @@ private fun FormDataItem(
                             if (editingIncentive.isBlank()) {
                                 editingIncentive = "0.0"
                             }
+
                             val newFormData = FormData(
-                                vehicleNumber = editingVehicleNumber,
-                                driverName = editingDriverName,
-                                amount = editingAmount.toFloat(),
-                                incentive = editingIncentive.toFloat(),
+                                vehicleNumber = editingVehicleNumber.trim(),
+                                driverName = editingDriverName.trim(),
+                                amount = editingAmount.trim().toFloat(),
+                                incentive = editingIncentive.trim().toFloat(),
                             )
 
                             if (newFormData == formData) {
                                 showEditDialog = false
                             }
-                            val success =
-                                formViewModel.editFormData(partnerName, formData, newFormData, context = context)
-                            if (success) {
-                                showEditDialog = false
+
+                            coroutineScope.launch {
+                                val success = formViewModel.editFormData(partnerName, formData, newFormData, context)
+                                showEditDialog = !success
                             }
+
                         } catch (e: NumberFormatException) {
                             formViewModel.editingError.value = context.getString(R.string.please_enter_valid_numbers)
                         }

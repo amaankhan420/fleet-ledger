@@ -83,7 +83,7 @@ fun PDFScreen(
                     .padding(paddingValues)
                     .padding(16.dp)
             ) {
-                items(pdfList) { pdfFile ->
+                items(pdfList.reversed()) { pdfFile ->
                     PDFListItem(
                         pdfFile = pdfFile,
                         onDelete = { pdfViewModel.deletePdf(context, pdfFile) },

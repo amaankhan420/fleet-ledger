@@ -28,13 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fleetapp.R
-import com.example.fleetapp.components.DateRangePicker
 import com.example.fleetapp.components.FormInputs
 import com.example.fleetapp.components.TopBar
 import com.example.fleetapp.routes.Routes
 import com.example.fleetapp.routes.Routes.ListOfEntry
 import com.example.fleetapp.routes.Routes.PDF
 import com.example.fleetapp.viewmodels.FormViewModel
+
 
 @Composable
 fun FormScreen(
@@ -43,8 +43,6 @@ fun FormScreen(
     context: Context
 ) {
     val formDataMap by formViewModel.formDataFlow.collectAsState()
-    val startDate by formViewModel.startDate.collectAsState()
-    val endDate by formViewModel.endDate.collectAsState()
     val partnerName by formViewModel.partnerName.collectAsState()
     val vehicleNumber by formViewModel.vehicleNumber.collectAsState()
     val driverName by formViewModel.driverName.collectAsState()
@@ -71,15 +69,10 @@ fun FormScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 25.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            DateRangePicker { selectedStartDate, selectedEndDate ->
-                formViewModel.startDate.value = selectedStartDate
-                formViewModel.endDate.value = selectedEndDate
-                formViewModel.errorMessage.value = ""
-            }
 
             FormInputs(
                 partnerName = partnerName,
@@ -123,8 +116,7 @@ fun FormScreen(
             ) {
                 Button(
                     onClick = {
-                        if (partnerName.isBlank() || startDate.isBlank() ||
-                            endDate.isBlank() || vehicleNumber.isBlank()
+                        if (partnerName.isBlank() || vehicleNumber.isBlank()
                             || driverName.isBlank() || amount.isBlank()
                         ) {
                             formViewModel.errorMessage.value =

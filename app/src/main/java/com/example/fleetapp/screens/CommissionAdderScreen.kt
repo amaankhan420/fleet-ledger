@@ -51,9 +51,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.fleetapp.R
+import com.example.fleetapp.components.DateRangePicker
 import com.example.fleetapp.components.InputTextField
 import com.example.fleetapp.components.TopBar
 import com.example.fleetapp.viewmodels.FormViewModel
+
 
 @Composable
 fun CommissionAdderScreen(
@@ -66,6 +68,10 @@ fun CommissionAdderScreen(
     var showDialog by remember { mutableStateOf(false) }
     var companyName by remember { mutableStateOf("") }
     var permissionGranted by remember { mutableStateOf(false) }
+
+    val startDate by formViewModel.startDate.collectAsState()
+    val endDate by formViewModel.endDate.collectAsState()
+
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -158,6 +164,15 @@ fun CommissionAdderScreen(
                         text = context.getString(R.string.ensure_commission_values),
                         style = MaterialTheme.typography.bodySmall,
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    DateRangePicker { selectedStartDate, selectedEndDate ->
+                        formViewModel.startDate.value = selectedStartDate
+                        formViewModel.endDate.value = selectedEndDate
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = context.getString(R.string.enter_company_name),
                         style = MaterialTheme.typography.bodyMedium,
@@ -181,7 +196,7 @@ fun CommissionAdderScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
-                        if (companyName.isNotBlank()) {
+                        if (companyName.isNotBlank() && startDate.isNotEmpty() && endDate.isNotEmpty()) {
                             formViewModel.createPdfOfData(context, companyName)
                             showDialog = false
                         }
@@ -221,10 +236,10 @@ fun CommissionCard(partnerName: String, partnerProfit: Float, context: Context, 
         )
     ) {
         var editingCommission by rememberSaveable {
-            mutableStateOf(formViewModel.partnerMetaDataFlow.value[partnerName]?.first?.toString() ?: "")
+            mutableStateOf(formViewModel.partnerMetaDataFlow.value[partnerName]?.commission?.toString() ?: "")
         }
         var editingRemarks by rememberSaveable {
-            mutableStateOf(formViewModel.partnerMetaDataFlow.value[partnerName]?.second ?: "")
+            mutableStateOf(formViewModel.partnerMetaDataFlow.value[partnerName]?.remarks ?: "")
         }
 
         Column(

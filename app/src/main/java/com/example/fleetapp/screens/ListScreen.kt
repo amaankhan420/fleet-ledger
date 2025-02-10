@@ -21,6 +21,7 @@ import com.example.fleetapp.routes.Routes
 import com.example.fleetapp.routes.Routes.Commission
 import com.example.fleetapp.viewmodels.FormViewModel
 
+
 @Composable
 fun ListScreen(
     formViewModel: FormViewModel,
@@ -103,7 +104,8 @@ fun ListScreen(
 
                 DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     partnerNames.forEach { partner ->
                         DropdownMenuItem(

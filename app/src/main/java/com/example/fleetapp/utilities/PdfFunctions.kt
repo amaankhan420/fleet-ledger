@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.example.fleetapp.R
 import com.example.fleetapp.dataclasses.FormData
+import com.example.fleetapp.dataclasses.PartnerMetaData
 import com.itextpdf.kernel.colors.DeviceRgb
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -17,6 +18,7 @@ import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import java.io.File
 import java.time.LocalTime
+
 
 class PdfFunctions {
     companion object {
@@ -33,7 +35,7 @@ class PdfFunctions {
         fun createPdf(
             context: Context,
             formDataMap: Map<String, List<FormData>>,
-            partnerMetadata: Map<String, Pair<Float, String>>,
+            partnerMetadata: Map<String, PartnerMetaData>,
             nameOfCompany: String,
             startDate: String,
             endDate: String,
@@ -52,12 +54,16 @@ class PdfFunctions {
                 val document = Document(pdfDocument)
 
                 document.add(
-                    Paragraph("$nameOfCompany ${if (isIndividual) "" else context.getString(R.string.fleet_report)}").setTextAlignment(TextAlignment.CENTER)
+                    Paragraph("$nameOfCompany ${if (isIndividual) "" else context.getString(R.string.fleet_report)}")
+                        .setTextAlignment(TextAlignment.CENTER)
                         .setFontSize(18f)
                         .setBold().setMarginBottom(8f)
                 )
                 document.add(
-                    Paragraph("From $startDate to $endDate").setTextAlignment(TextAlignment.CENTER).setFontSize(14f).setItalic().setMarginBottom(20f)
+                    Paragraph("From $startDate to $endDate")
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setFontSize(14f).setItalic()
+                        .setMarginBottom(20f)
                 )
 
                 var grandTotalAmount = 0f
@@ -65,13 +71,19 @@ class PdfFunctions {
                 var grandTotalCommission = 0f
 
                 val grayColor = DeviceRgb(200, 200, 200)
+                val whiteColor = DeviceRgb(255, 255, 255)
+                val lightGrayColor = DeviceRgb(240, 240, 240)
 
                 formDataMap.forEach { (partnerName, formDataList) ->
                     document.add(
-                        Paragraph("${context.getString(R.string.partner_name)}: $partnerName").setFontSize(16f).setBold().setMarginBottom(10f)
+                        Paragraph("${context.getString(R.string.partner_name)}: $partnerName")
+                            .setFontSize(16f)
+                            .setBold()
+                            .setMarginBottom(10f)
                     )
 
-                    val table = Table(floatArrayOf(3f, 3f, 2f, 2f)).useAllAvailableWidth()
+                    val table = Table(floatArrayOf(3f, 3f, 2f, 2f))
+                        .useAllAvailableWidth()
 
                     val labels = listOf(
                         context.getString(R.string.vehicle_number),
@@ -79,63 +91,156 @@ class PdfFunctions {
                         context.getString(R.string.amount),
                         context.getString(R.string.incentive)
                     )
+
                     labels.forEach {
-                        val cell = Cell().add(Paragraph(it).setBold()).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER)
-                        table.addHeaderCell(cell)
+                        table.addHeaderCell(
+                            Cell()
+                                .add(Paragraph(it).setBold())
+                                .setBackgroundColor(grayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
                     }
 
                     var totalAmount = 0f
                     var totalIncentives = 0f
 
+                    var isGray = false
                     formDataList.forEach { formData ->
-                        table.addCell(Cell().add(Paragraph(formData.vehicleNumber)).setTextAlignment(TextAlignment.CENTER))
-                        table.addCell(Cell().add(Paragraph(formData.driverName)).setTextAlignment(TextAlignment.CENTER))
-                        table.addCell(Cell().add(Paragraph("₹${formData.amount}"))).setTextAlignment(TextAlignment.CENTER)
-                        table.addCell(Cell().add(Paragraph("₹${formData.incentive}"))).setTextAlignment(TextAlignment.CENTER)
+                        val bgColor = if (isGray) lightGrayColor else whiteColor
+                        isGray = !isGray
+
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph(formData.vehicleNumber))
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setBackgroundColor(bgColor)
+                        )
+
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph(formData.driverName))
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setBackgroundColor(bgColor)
+                        )
+
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph("₹${formData.amount}"))
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setBackgroundColor(bgColor)
+                        )
+
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph("₹${formData.incentive}"))
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setBackgroundColor(bgColor)
+                        )
+
                         totalAmount += formData.amount
                         totalIncentives += formData.incentive
                     }
 
-                    listOf(context.getString(R.string.total), "", "₹$totalAmount", "₹$totalIncentives").forEach {
+                    table.addCell(
+                        Cell(1, 2)
+                            .add(Paragraph(context.getString(R.string.total)))
+                            .setBackgroundColor(grayColor)
+                            .setTextAlignment(TextAlignment.RIGHT)
+                    )
+
+                    listOf("₹$totalAmount", "₹$totalIncentives").forEach {
                         table.addCell(
-                            Cell().add(Paragraph(it)).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER)
+                            Cell()
+                                .add(Paragraph(it))
+                                .setBackgroundColor(grayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
                         )
                     }
 
-                    listOf(context.getString(R.string.total_incentive), "", "", "+₹${totalIncentives}").forEach {
-                        table.addCell(Cell().add(Paragraph(it)).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER))
+                    table.addCell(
+                        Cell(1, 2)
+                            .add(Paragraph(context.getString(R.string.total_incentive)))
+                            .setBackgroundColor(grayColor)
+                            .setTextAlignment(TextAlignment.RIGHT)
+                    )
+
+                    listOf("+₹${totalIncentives}", "").forEach {
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph(it))
+                                .setBackgroundColor(grayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
                     }
 
-                    val totalCommission = partnerMetadata[partnerName]?.first ?: 0f
+                    val totalCommission = partnerMetadata[partnerName]?.commission ?: 0f
                     grandTotalAmount += totalAmount
                     grandTotalIncentives += totalIncentives
                     grandTotalCommission += totalCommission
 
-                    listOf(context.getString(R.string.total_commission), "", "", "-₹$totalCommission").forEach {
-                        table.addCell(Cell().add(Paragraph(it)).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER))
-                    }
+                    table.addCell(
+                        Cell(1, 2)
+                            .add(Paragraph(context.getString(R.string.total_commission)))
+                            .setBackgroundColor(grayColor)
+                            .setTextAlignment(TextAlignment.RIGHT)
+                    )
 
-                    val payableAmount = totalAmount + totalIncentives - totalCommission
-                    listOf(context.getString(R.string.payable), "", "", "₹$payableAmount").forEach {
+                    listOf("-₹$totalCommission", "").forEach {
                         table.addCell(
-                            Cell().add(Paragraph(it)).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER)
+                            Cell().add(Paragraph(it))
+                                .setBackgroundColor(grayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
                         )
                     }
 
-                    if (partnerMetadata[partnerName]?.second != "") {
-                        table.addCell(Cell().add(Paragraph(context.getString(R.string.remarks))).setTextAlignment(TextAlignment.CENTER))
-                        table.addCell(Cell(1, 3).add(Paragraph(partnerMetadata[partnerName]?.second ?: "")).setTextAlignment(TextAlignment.CENTER))
+                    val payableAmount = totalAmount + totalIncentives - totalCommission
+
+                    table.addCell(
+                        Cell(1, 2)
+                            .add(Paragraph(context.getString(R.string.payable)))
+                            .setBackgroundColor(grayColor)
+                            .setTextAlignment(TextAlignment.RIGHT)
+                    )
+
+                    listOf("₹$payableAmount", "").forEach {
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph(it))
+                                .setBackgroundColor(grayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
+                    }
+
+                    if (partnerMetadata[partnerName]?.remarks != "") {
+                        table.addCell(
+                            Cell()
+                                .add(Paragraph(context.getString(R.string.remarks)))
+                                .setBackgroundColor(lightGrayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
+                        table.addCell(
+                            Cell(1, 3)
+                                .add(Paragraph(partnerMetadata[partnerName]?.remarks ?: ""))
+                                .setBackgroundColor(lightGrayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
                     }
 
                     document.add(table)
-                    document.add(Paragraph("").setMarginBottom(15f))
+                    document.add(Paragraph("")
+                        .setMarginBottom(15f))
                 }
 
-                document.add(Paragraph("").setMarginBottom(30f))
+                document.add(Paragraph("")
+                    .setMarginBottom(30f))
 
-                val summaryTable = Table(floatArrayOf(3f, 3f)).useAllAvailableWidth()
+                val summaryTable = Table(floatArrayOf(3f, 3f))
+                    .useAllAvailableWidth()
+
                 summaryTable.addHeaderCell(
-                    Cell(1, 2).add(Paragraph(context.getString(R.string.fleet_report_summary)).setBold()).setBackgroundColor(DeviceRgb(180, 180, 180))
+                    Cell(1, 2)
+                        .add(Paragraph(context.getString(R.string.fleet_report_summary)).setBold())
+                        .setBackgroundColor(grayColor)
                         .setTextAlignment(TextAlignment.CENTER)
                 )
 
@@ -145,8 +250,19 @@ class PdfFunctions {
                     context.getString(R.string.total_commission), "₹$grandTotalCommission",
                     context.getString(R.string.total_payable_amount), "₹${grandTotalAmount + grandTotalIncentives - grandTotalCommission}"
                 ).chunked(2).forEach {
-                    summaryTable.addCell(Cell().add(Paragraph(it[0])).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER))
-                    summaryTable.addCell(Cell().add(Paragraph(it[1])).setBackgroundColor(grayColor).setTextAlignment(TextAlignment.CENTER))
+                    summaryTable.addCell(
+                        Cell()
+                            .add(Paragraph(it[0]))
+                            .setBackgroundColor(lightGrayColor)
+                            .setTextAlignment(TextAlignment.CENTER)
+                    )
+
+                    summaryTable.addCell(
+                        Cell()
+                            .add(Paragraph(it[1]))
+                            .setBackgroundColor(lightGrayColor)
+                            .setTextAlignment(TextAlignment.CENTER)
+                    )
                 }
 
                 document.add(summaryTable)
