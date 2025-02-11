@@ -1,5 +1,5 @@
-Fleet Tracker App 🚛📊
-The Fleet Tracker App allows users to manage fleet details, generate PDF reports, and manage them all within the app. Ideal for logistics managers, fleet owners, or anyone needing an efficient way to track and document fleet operations.
+Fleet Ledger App 🚛📊
+The Fleet Ledger App allows users to manage fleet details, generate PDF reports, and manage them all within the app. Ideal for logistics managers, fleet owners, or anyone needing an efficient way to track and document fleet operations.
 
 Features
  - Add Fleet Details – Input and store information about fleets. 
@@ -9,13 +9,13 @@ Features
 
 File Structure
 The project's directory structure is as follows:
-fleet-tracker/
+FleetApp/
 ├── app/                          # Main application module
 │   ├── src/                      # Source files
 │   │   ├── main/                 # Main source folder
 │   │   │   ├── java/             # Java/Kotlin code files
 │   │   │   │   └── com/          # Package for application
-│   │   │   │       └── fleettracker/
+│   │   │   │       └── fleetapp/
 │   │   │   │           ├── components/  # UI components
 │   │   │   │           ├── dataclasses/ # Data models
 │   │   │   │           ├── datastore/   # Datastore
@@ -33,7 +33,7 @@ fleet-tracker/
 
 Installation
 Clone this repository:
-  - git clone https://github.com/amaankhan420/fleet-tracker.git
+  - git clone https://github.com/amaankhan420/fleet-ledger.git
 Open the project in Android Studio.
 Build the project.
 
