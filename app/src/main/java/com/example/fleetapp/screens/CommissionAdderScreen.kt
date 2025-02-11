@@ -2,9 +2,6 @@ package com.example.fleetapp.screens
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -36,7 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.example.fleetapp.R
 import com.example.fleetapp.components.DateRangePicker
 import com.example.fleetapp.components.InputTextField
@@ -68,26 +63,12 @@ fun CommissionAdderScreen(
     var showDialog by remember { mutableStateOf(false) }
     var companyName by remember { mutableStateOf("") }
     var permissionGranted by remember { mutableStateOf(false) }
-
-    val startDate by formViewModel.startDate.collectAsState()
-    val endDate by formViewModel.endDate.collectAsState()
-
+    var isIndividual by remember { mutableStateOf(true) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         permissionGranted = isGranted
-    }
-
-    LaunchedEffect(context) {
-        permissionGranted = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
     }
 
     Scaffold(
@@ -97,15 +78,14 @@ fun CommissionAdderScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    try {
-                        if (partnerMetadata.isEmpty()) return@FloatingActionButton
-                        if (permissionGranted) {
-                            showDialog = true
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
-                    } catch (e: Exception) {
-                        Log.e("ListScreen", context.getString(R.string.fab_error), e)
+                    isIndividual = false
+                    companyName = ""
+                    if (partnerMetadata.isEmpty()) return@FloatingActionButton
+                    if (permissionGranted) {
+                        showDialog = true
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        showDialog = true
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -147,7 +127,11 @@ fun CommissionAdderScreen(
                     formDataMap.forEach { (partnerName, formDataList) ->
                         val totalProfit = formDataList.sumOf { it.amount.toDouble() }.toFloat()
                         item {
-                            CommissionCard(partnerName, totalProfit, context, formViewModel)
+                            CommissionCard(partnerName, totalProfit, formViewModel, context, onShowDialog = {
+                                companyName = partnerName
+                                showDialog = true
+                                isIndividual = true
+                            })
                         }
                     }
                 }
@@ -155,74 +139,22 @@ fun CommissionAdderScreen(
         }
     }
 
-    if (showDialog && formDataMap.isNotEmpty()) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = {
-                Column {
-                    Text(
-                        text = context.getString(R.string.ensure_commission_values),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    DateRangePicker { selectedStartDate, selectedEndDate ->
-                        formViewModel.startDate.value = selectedStartDate
-                        formViewModel.endDate.value = selectedEndDate
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = context.getString(R.string.enter_company_name),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            text = {
-                OutlinedTextField(
-                    value = companyName,
-                    onValueChange = { companyName = it },
-                    label = { Text(context.getString(R.string.company_name)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-            },
-            confirmButton = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    onClick = {
-                        if (companyName.isNotBlank() && startDate.isNotEmpty() && endDate.isNotEmpty()) {
-                            formViewModel.createPdfOfData(context, companyName)
-                            showDialog = false
-                        }
-                    }
-                ) {
-                    Text(context.getString(R.string.generate_pdf))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    onClick = { showDialog = false }
-                ) {
-                    Text(context.getString(R.string.cancel))
-                }
-            }
-        )
-    }
+    CommissionDialog(
+        showDialog = showDialog,
+        onDismiss = { showDialog = false },
+        onConfirm = {
+            formViewModel.createPdfOfData(context, it, isIndividual)
+            showDialog = false
+        },
+        companyName = companyName,
+        onCompanyNameChange = { companyName = it },
+        context = context,
+        formViewModel = formViewModel
+    )
 }
 
-
 @Composable
-fun CommissionCard(partnerName: String, partnerProfit: Float, context: Context, formViewModel: FormViewModel) {
+fun CommissionCard(partnerName: String, partnerProfit: Float, formViewModel: FormViewModel, context: Context, onShowDialog: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -263,10 +195,7 @@ fun CommissionCard(partnerName: String, partnerProfit: Float, context: Context, 
                     )
                 }
 
-                IconButton(
-                    onClick = {
-                        formViewModel.shareIndividualPDF(context, partnerName)
-                    }) {
+                IconButton(onClick = onShowDialog) {
                     Icon(
                         Icons.Default.Share,
                         contentDescription = context.getString(R.string.share)
@@ -322,5 +251,80 @@ fun CommissionCard(partnerName: String, partnerProfit: Float, context: Context, 
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun CommissionDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    companyName: String,
+    onCompanyNameChange: (String) -> Unit,
+    context: Context,
+    formViewModel: FormViewModel
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Column {
+                    Text(
+                        text = context.getString(R.string.ensure_commission_values),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    DateRangePicker { selectedStartDate, selectedEndDate ->
+                        formViewModel.startDate.value = selectedStartDate
+                        formViewModel.endDate.value = selectedEndDate
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = context.getString(R.string.enter_company_name),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            text = {
+                OutlinedTextField(
+                    value = companyName,
+                    onValueChange = onCompanyNameChange,
+                    label = { Text(context.getString(R.string.company_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    onClick = {
+                        if (companyName.isNotBlank() && formViewModel.startDate.value.isNotEmpty() && formViewModel.endDate.value.isNotEmpty()) {
+                            onConfirm(companyName)
+                        }
+                    }
+                ) {
+                    Text(context.getString(R.string.generate_pdf))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    onClick = onDismiss
+                ) {
+                    Text(context.getString(R.string.cancel))
+                }
+            }
+        )
     }
 }

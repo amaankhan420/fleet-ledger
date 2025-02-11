@@ -160,7 +160,7 @@ class PdfFunctions {
                     table.addCell(
                         Cell(1, 2)
                             .add(Paragraph(context.getString(R.string.total_incentive)))
-                            .setBackgroundColor(grayColor)
+                            .setBackgroundColor(whiteColor)
                             .setTextAlignment(TextAlignment.RIGHT)
                     )
 
@@ -168,7 +168,7 @@ class PdfFunctions {
                         table.addCell(
                             Cell()
                                 .add(Paragraph(it))
-                                .setBackgroundColor(grayColor)
+                                .setBackgroundColor(whiteColor)
                                 .setTextAlignment(TextAlignment.CENTER)
                         )
                     }
@@ -181,14 +181,14 @@ class PdfFunctions {
                     table.addCell(
                         Cell(1, 2)
                             .add(Paragraph(context.getString(R.string.total_commission)))
-                            .setBackgroundColor(grayColor)
+                            .setBackgroundColor(whiteColor)
                             .setTextAlignment(TextAlignment.RIGHT)
                     )
 
                     listOf("-₹$totalCommission", "").forEach {
                         table.addCell(
                             Cell().add(Paragraph(it))
-                                .setBackgroundColor(grayColor)
+                                .setBackgroundColor(whiteColor)
                                 .setTextAlignment(TextAlignment.CENTER)
                         )
                     }
@@ -227,45 +227,52 @@ class PdfFunctions {
                     }
 
                     document.add(table)
-                    document.add(Paragraph("")
-                        .setMarginBottom(15f))
+                    document.add(
+                        Paragraph("")
+                            .setMarginBottom(15f)
+                    )
                 }
 
-                document.add(Paragraph("")
-                    .setMarginBottom(30f))
-
-                val summaryTable = Table(floatArrayOf(3f, 3f))
-                    .useAllAvailableWidth()
-
-                summaryTable.addHeaderCell(
-                    Cell(1, 2)
-                        .add(Paragraph(context.getString(R.string.fleet_report_summary)).setBold())
-                        .setBackgroundColor(grayColor)
-                        .setTextAlignment(TextAlignment.CENTER)
+                document.add(
+                    Paragraph("")
+                        .setMarginBottom(30f)
                 )
 
-                listOf(
-                    context.getString(R.string.total_amount), "₹$grandTotalAmount",
-                    context.getString(R.string.total_incentive), "₹$grandTotalIncentives",
-                    context.getString(R.string.total_commission), "₹$grandTotalCommission",
-                    context.getString(R.string.total_payable_amount), "₹${grandTotalAmount + grandTotalIncentives - grandTotalCommission}"
-                ).chunked(2).forEach {
-                    summaryTable.addCell(
-                        Cell()
-                            .add(Paragraph(it[0]))
-                            .setBackgroundColor(lightGrayColor)
+                if (!isIndividual) {
+                    val summaryTable = Table(floatArrayOf(3f, 3f))
+                        .useAllAvailableWidth()
+
+                    summaryTable.addHeaderCell(
+                        Cell(1, 2)
+                            .add(Paragraph(context.getString(R.string.fleet_report_summary)).setBold())
+                            .setBackgroundColor(grayColor)
                             .setTextAlignment(TextAlignment.CENTER)
                     )
 
-                    summaryTable.addCell(
-                        Cell()
-                            .add(Paragraph(it[1]))
-                            .setBackgroundColor(lightGrayColor)
-                            .setTextAlignment(TextAlignment.CENTER)
-                    )
+                    listOf(
+                        context.getString(R.string.total_amount), "₹$grandTotalAmount",
+                        context.getString(R.string.total_incentive), "₹$grandTotalIncentives",
+                        context.getString(R.string.total_commission), "₹$grandTotalCommission",
+                        context.getString(R.string.total_payable_amount), "₹${grandTotalAmount + grandTotalIncentives - grandTotalCommission}"
+                    ).chunked(2).forEach {
+                        summaryTable.addCell(
+                            Cell()
+                                .add(Paragraph(it[0]))
+                                .setBackgroundColor(lightGrayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
+
+                        summaryTable.addCell(
+                            Cell()
+                                .add(Paragraph(it[1]))
+                                .setBackgroundColor(lightGrayColor)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
+                    }
+
+                    document.add(summaryTable)
                 }
 
-                document.add(summaryTable)
                 document.close()
                 return true
             } catch (e: Exception) {

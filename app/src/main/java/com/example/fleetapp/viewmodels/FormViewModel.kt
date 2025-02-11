@@ -67,7 +67,7 @@ class FormViewModel(private val formDataStore: FormDataStore) : ViewModel() {
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
 
                 val amountValue = amount.value.trim().toFloat()
-                val incentiveValue = incentive.value.trim().toFloat()
+                val incentiveValue = if (incentive.value.isBlank()) 0f else incentive.value.trim().toFloat()
 
                 if (_vehicleSet.value.contains(vehicleNumber.value) && incentiveValue > 0f) {
                     errorMessage.value = context.getString(R.string.incentive_already_added)
@@ -185,7 +185,7 @@ class FormViewModel(private val formDataStore: FormDataStore) : ViewModel() {
         }
     }
 
-    fun createPdfOfData(context: Context, nameOfCompany: String) {
+    fun createPdfOfData(context: Context, nameOfCompany: String, isIndividual: Boolean = false) {
         val formDataMap = _formDataMap.value
         val partnerMetadata = _partnerMetaData.value
         try {
@@ -195,11 +195,14 @@ class FormViewModel(private val formDataStore: FormDataStore) : ViewModel() {
                 partnerMetadata,
                 nameOfCompany,
                 startDate.value,
-                endDate.value
+                endDate.value,
+                isIndividual
             )
             if (result) {
                 Toast.makeText(context, context.getString(R.string.pdf_generated_successfully), Toast.LENGTH_SHORT).show()
-                clearFields(true, context)
+            }
+            if (isIndividual) {
+                sharePDF(context)
             }
         } catch (e: NullPointerException) {
             Toast.makeText(context, context.getString(R.string.no_data_to_display), Toast.LENGTH_SHORT).show()
@@ -208,31 +211,12 @@ class FormViewModel(private val formDataStore: FormDataStore) : ViewModel() {
         }
     }
 
-    fun shareIndividualPDF(context: Context, partnerName: String) {
-        val formDataList = _formDataMap.value[partnerName]
-        val partnerMetadata = _partnerMetaData.value
-
-        if (formDataList.isNullOrEmpty()) {
-            Toast.makeText(context, context.getString(R.string.no_data_found), Toast.LENGTH_SHORT).show()
-            return
-        }
-
+    private fun sharePDF(context: Context) {
         try {
-            val result = PdfFunctions.createPdf(
-                context = context,
-                formDataMap = mapOf(partnerName to formDataList),
-                partnerMetadata = partnerMetadata,
-                nameOfCompany = partnerName,
-                startDate = startDate.value,
-                endDate = endDate.value,
-                isIndividual = true
-            )
-
-            if (result) {
-                PdfFunctions.sharePdf(context, PdfFunctions.loadPdfs(context).last())
-            }
+            val pdfList = PdfFunctions.loadPdfs(context)
+            PdfFunctions.sharePdf(context, pdfList.last())
         } catch (e: Exception) {
-            Toast.makeText(context, context.getString(R.string.failed_to_generate_pdf), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.failed_to_share_pdf), Toast.LENGTH_SHORT).show()
         }
     }
 }

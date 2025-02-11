@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
@@ -34,6 +34,9 @@ import com.example.fleetapp.R
 import com.example.fleetapp.components.TopBar
 import com.example.fleetapp.viewmodels.PDFViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -48,6 +51,13 @@ fun PDFScreen(
     }
 
     val pdfList = pdfViewModel.pdfList
+
+    val dateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+
+    val groupedPdfs = pdfList.groupBy {
+        dateFormatter.format(Date(it.lastModified()))
+    }.toSortedMap(reverseOrder())
 
     Scaffold(
         topBar = {
@@ -81,16 +91,26 @@ fun PDFScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
-                items(pdfList.reversed()) { pdfFile ->
-                    PDFListItem(
-                        pdfFile = pdfFile,
-                        onDelete = { pdfViewModel.deletePdf(context, pdfFile) },
-                        onShare = { pdfViewModel.sharePdf(context, pdfFile) },
-                        onClick = { pdfViewModel.openPdf(context, pdfFile) },
-                        context = context
-                    )
+                groupedPdfs.forEach { (date, files) ->
+                    item {
+                        Text(
+                            text = date,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    itemsIndexed(files) { _, pdfFile ->
+                        PDFListItem(
+                            pdfFile = pdfFile,
+                            onDelete = { pdfViewModel.deletePdf(context, pdfFile) },
+                            onShare = { pdfViewModel.sharePdf(context, pdfFile) },
+                            onClick = { pdfViewModel.openPdf(context, pdfFile) },
+                            context = context
+                        )
+                    }
                 }
             }
         }
