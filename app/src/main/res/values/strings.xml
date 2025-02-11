@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Fleet Tracker</string>
-    <string name="fleet_tracker">Fleet Tracker</string>
+    <string name="app_name">Fleet Ledger</string>
+    <string name="fleet_tracker">Fleet Ledger</string>
     <string name="saved_reports">Saved Reports</string>
 
     <string name="date_range_picker_title">Select Date Range</string>
